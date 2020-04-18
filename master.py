@@ -15,6 +15,7 @@ global callsign
 global callsign_count
 global aircraft
 global aircraft_count
+global runway
 
 stop_words = set(stopwords.words('english'))
 
@@ -25,42 +26,59 @@ def domain_aircraft(atc_call):
     airplane_ref = {}
     with open('references/aircrafts.json') as f:
         airplane_ref = json.load(f)
-    for aircraft in airplane_ref:
-        matched = [x for x in airplane_ref[aircraft] if x in atc_call]
+    for object in airplane_ref:
+        matched = [x for x in airplane_ref[object] if x in atc_call]
         if matched:
-            logger.log_event("Found " + aircraft)
-
-            atc_call = atc_call.replace(matched[0], " aircraft ")
+            logger.log_event("Found " + object)
+            aircraft = object
+            atc_call = atc_call.replace(matched[0], " aircraft_ref ")
     return atc_call
 
 def domain_callsigns(atc_call):
-    global speaker_obj
     global callsign
 
     callsign_ref = {}
     with open('references/callsigns.json') as f:
         callsign_ref = json.load(f)
 
-    for callsign in callsign_ref:
-        matched = [x for x in callsign_ref[callsign] if x in atc_call]
+    for name in callsign_ref:
+        matched = [x for x in callsign_ref[name] if x in atc_call]
         if matched:
-            logger.log_event("Found " + callsign)
-            speaker_obj.synthesise(callsign + " flight!" + " Nellis Tower, taxi to and hold short of, runway 3, Left.")
-            speaker_obj.speak()
-            atc_call = atc_call.replace(matched[0], " callsign ")
+            logger.log_event("Found " + name)
+            callsign = name
+            atc_call = atc_call.replace(matched[0], " callsign_ref ")
+    return atc_call
+
+def domain_runway(atc_call):
+    global runway
+
+    with open('references/runways.json') as f:
+        runway_ref = json.load(f)
+
+    for name in runway_ref:
+        matched = [x for x in runway_ref[name] if x in atc_call]
+        if matched:
+            logger.log_event("Found " + name)
+            runway = name
+            atc_call = atc_call.replace(matched[0], " runway_ref ")
+            break
     return atc_call
 
 
 def transform(recieved_call):
+    global callsign
+    global callsign_count
+
     recieved_call = recieved_call.lower()
     received = domain_aircraft(recieved_call)
     received = domain_callsigns(received)
+    received = domain_runway(received)
     word_tokens = word_tokenize(received)
     filtered_sentence = [w for w in word_tokens if w not in stop_words]
     logger.log_event("Recognized: {}".format(filtered_sentence))
-    for e,i in filtered_sentence:
-        print(e)
-        print(i)
+    for i in range(len(filtered_sentence)):
+        if (filtered_sentence[i] == "callsign_ref"):
+            callsign_count = filtered_sentence[i+1]
 
 
 with open('./credentials.cred') as f:
@@ -73,6 +91,9 @@ with open('./credentials.cred') as f:
 
 listener_obj.listen()
 received = listener_obj.last_result()
-
 transform(received)
+
+speaker_obj.synthesise(callsign + callsign_count + "!" + " Nellis Tower, taxi to and hold short of, runway " + runway)
+speaker_obj.speak()
+
 
