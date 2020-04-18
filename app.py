@@ -3,8 +3,6 @@ import recognition.listener as listen
 import synthesis.speaker as speaker
 import telemetry.atc_log as logger
 import nltk
-nltk.download('stopwords')
-nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
@@ -17,6 +15,8 @@ global aircraft
 global aircraft_count
 global runway
 
+nltk.download('stopwords')
+nltk.download('punkt')
 stop_words = set(stopwords.words('english'))
 
 
