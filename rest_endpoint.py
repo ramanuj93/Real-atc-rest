@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_cors import CORS
+from flask import send_file
 import json
 import recognition.listener as listen
 import synthesis.speaker as speaker
@@ -11,6 +12,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import wave
 import librosa
+import librosa.display
 
 global credentials
 global listener_obj
@@ -97,19 +99,17 @@ def send_audio():
     resp = request.files
     print(resp)
     newfile = resp['recorded'].read()
-    with wave.open('ussr.wav', 'wb') as file:
-        file.setnchannels(1)
-        file.setsampwidth(2)
-        file.setframerate(48000)
-        file.writeframes(newfile)
-
+    with open('ussr.wav', 'wb') as file:
+        file.write(newfile)
+    filew, _ = librosa.load('ussr.wav', sr=16000)
+    librosa.output.write_wav('ussr3.wav', y=filew, sr=16000)
 
     with open('./credentials.cred') as f:
         global speaker_obj
         global listener_obj
 
         credentials = json.load(f)
-        listener_obj = listen.Listener(credentials, 'ussr.wav')
+        listener_obj = listen.Listener(credentials, 'ussr3.wav')
         speaker_obj = speaker.Speaker(credentials)
 
     listener_obj.listen()
@@ -119,11 +119,13 @@ def send_audio():
     speaker_obj.synthesise(
         callsign + callsign_count + "!" + " Nellis Tower, taxi to and hold short of, runway " + runway)
     speaker_obj.speak()
-    return resp
+    return send_file(
+        'outputaudio.wav',
+        mimetype="blob",
+        as_attachment=True,
+        attachment_filename="result.wav")
 
-with open('ussr2.wav', 'wb') as file:
-    stuff = librosa.load('ussr.wav', sr=16000,)
-    file.write(stuff[0])
-# CORS(app, resources={r"/*": {"origins": "*"}})
-# app.run(port=3001, debug=False)
+
+CORS(app, resources={r"/*": {"origins": "*"}})
+app.run(port=3001, debug=False)
 

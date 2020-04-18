@@ -9,7 +9,9 @@ class Speaker:
         speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
         voice = "Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)"
         speech_config.speech_synthesis_voice_name = voice
-        self.__speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config)
+        file_name = "outputaudio.wav"
+        file_config = speechsdk.audio.AudioOutputConfig(filename=file_name)
+        self.__speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=file_config)
         self.__result = None
 
     def synthesise(self, text):
