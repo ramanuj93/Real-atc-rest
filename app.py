@@ -1,10 +1,18 @@
+from flask import Flask, request
+from flask_cors import CORS
+from flask import send_file
 import json
 import recognition.listener as listen
 import synthesis.speaker as speaker
 import telemetry.atc_log as logger
 import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+import wave
+import librosa
+import librosa.display
 
 global credentials
 global listener_obj
@@ -15,9 +23,10 @@ global aircraft
 global aircraft_count
 global runway
 
-nltk.download('stopwords')
-nltk.download('punkt')
+app = Flask(__name__)
+
 stop_words = set(stopwords.words('english'))
+
 
 
 def domain_aircraft(atc_call):
@@ -81,19 +90,42 @@ def transform(recieved_call):
             callsign_count = filtered_sentence[i+1]
 
 
-with open('./credentials.cred') as f:
-    global speaker_obj
-    global listener_obj
 
-    credentials = json.load(f)
-    listener_obj = listen.Listener(credentials)
-    speaker_obj = speaker.Speaker(credentials)
 
-listener_obj.listen()
-received = listener_obj.last_result()
-transform(received)
 
-speaker_obj.synthesise(callsign + callsign_count + "!" + " Nellis Tower, taxi to and hold short of, runway " + runway)
-speaker_obj.speak()
 
+@app.route('/sendaudio', methods=['POST', 'GET'])
+def send_audio():
+    resp = request.files
+    print(resp)
+    newfile = resp['recorded'].read()
+    with open('ussr.wav', 'wb') as file:
+        file.write(newfile)
+    filew, _ = librosa.load('ussr.wav', sr=16000)
+    librosa.output.write_wav('ussr3.wav', y=filew, sr=16000)
+
+    with open('./credentials.cred') as f:
+        global speaker_obj
+        global listener_obj
+
+        credentials = json.load(f)
+        listener_obj = listen.Listener(credentials, 'ussr3.wav')
+        speaker_obj = speaker.Speaker(credentials)
+
+    listener_obj.listen()
+    received = listener_obj.last_result()
+    transform(received)
+
+    speaker_obj.synthesise(
+        callsign + callsign_count + "!" + " Nellis Tower, taxi to and hold short of, runway " + runway)
+    speaker_obj.speak()
+    return send_file(
+        'outputaudio.wav',
+        mimetype="blob",
+        as_attachment=True,
+        attachment_filename="result.wav")
+
+
+CORS(app, resources={r"/*": {"origins": "*"}})
+app.run(port=3001, debug=False)
 
