@@ -20,6 +20,9 @@ jobs:
       with:
         python-version: '3.7'
 
+    - name: Force Azure Dependency
+      run: pip install azure
+
     - name: Build using AppService-Build
       uses: azure/appservice-build@v1
       with:
