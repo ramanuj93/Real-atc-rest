@@ -21,7 +21,6 @@
   <component name="ChangeListManager">
     <list default="true" id="496f95d7-6b80-45db-bf30-d1537b2da963" name="Default Changelist" comment="add stuff">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -206,7 +205,14 @@
       <option name="project" value="LOCAL" />
       <updated>1587244940451</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="remove hardcoded CORS">
+      <created>1587246072483</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1587246072483</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -227,7 +233,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="add stuff" />
     <MESSAGE value="add changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="add changes" />
+    <MESSAGE value="remove hardcoded CORS" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove hardcoded CORS" />
   </component>
   <component name="WindowStateProjectService">
     <state x="451" y="210" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1587175550220">
@@ -278,10 +285,10 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="755" y="236" width="466" height="633" key="RollbackChangesDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1587199478874" />
-    <state x="482" y="187" key="SettingsEditor" timestamp="1587244927172">
+    <state x="482" y="187" key="SettingsEditor" timestamp="1587246630296">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="482" y="187" key="SettingsEditor/67.27.1853.1053@67.27.1853.1053" timestamp="1587244927172" />
+    <state x="482" y="187" key="SettingsEditor/67.27.1853.1053@67.27.1853.1053" timestamp="1587246630296" />
     <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1587186707977">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
