@@ -127,5 +127,5 @@ def send_audio():
 
 
 CORS(app, resources={r"/*": {"origins": "*"}})
-app.run(port=3001, debug=False)
+app.run(port=80, debug=False)
 
