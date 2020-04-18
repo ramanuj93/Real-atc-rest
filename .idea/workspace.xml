@@ -20,9 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="496f95d7-6b80-45db-bf30-d1537b2da963" name="Default Changelist" comment="add stuff">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/master_realatc.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/master_realatc.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -234,7 +233,14 @@
       <option name="project" value="LOCAL" />
       <updated>1587248653302</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="remove azure dependency">
+      <created>1587249400662</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1587249400662</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -257,7 +263,8 @@
     <MESSAGE value="add changes" />
     <MESSAGE value="remove hardcoded CORS" />
     <MESSAGE value="add azure dependency" />
-    <option name="LAST_COMMIT_MESSAGE" value="add azure dependency" />
+    <MESSAGE value="remove azure dependency" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove azure dependency" />
   </component>
   <component name="WindowStateProjectService">
     <state x="451" y="210" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1587175550220">

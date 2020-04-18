@@ -1,5 +1,6 @@
 from flask import Flask, request
 # from flask_cors import CORS
+import sys
 from flask import send_file
 import json
 import recognition.listener as listen
@@ -127,5 +128,6 @@ def send_audio():
 
 
 # CORS(app, resources={r"/*": {"origins": "*"}})
+sys.path.append('/pythonenv3.8/lib/python3.8/site-packages')
 app.run(port=80, debug=False)
 
