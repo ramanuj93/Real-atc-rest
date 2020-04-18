@@ -2,13 +2,14 @@ import azure.cognitiveservices.speech as speechsdk
 
 
 class Listener:
-    def __init__(self, credentials):
+    def __init__(self, credentials, audio):
         speech_key = credentials['speech_key']
         service_region = credentials['service_region']
         speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
 
         # Creates a recognizer with the given settings
-        self.__speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config)
+        audio_config = speechsdk.audio.AudioConfig(filename=audio)
+        self.__speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
         self.__recognized = ''
 
     def listen(self):
