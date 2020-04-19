@@ -3,7 +3,8 @@ import azure.cognitiveservices.speech as speechsdk
 
 class Speaker:
 
-    def __init__(self, credentials):
+    def __init__(self, credentials, folder):
+        self._folder = folder
         speech_key = credentials['speech_key']
         service_region = credentials['service_region']
         self._speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
@@ -12,7 +13,7 @@ class Speaker:
         self.__result = None
 
     def synthesise(self, text):
-        file_name = "outputaudio.wav"
+        file_name = self._folder + "outputaudio.wav"
         file_config = speechsdk.audio.AudioOutputConfig(filename=file_name)
         self.__speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=self._speech_config, audio_config=file_config)
         self.__result = self.__speech_synthesizer.speak_text_async(text)

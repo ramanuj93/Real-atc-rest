@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask import send_file
 import json
 import os
+import tempfile
 import recognition.listener as listen
 import synthesis.speaker as speaker
 import telemetry.atc_log as logger
@@ -10,6 +11,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import librosa
+import random
 
 global credentials
 global listener_obj
@@ -91,20 +93,28 @@ def transform(recieved_call):
 
 @app.route('/sendaudio', methods=['POST', 'GET'])
 def send_audio():
+    global listener_obj
+    global speaker_obj
+
     resp = request.files
     print(resp)
+
+    folderid = tempfile.mkdtemp()
     newfile = resp['recorded'].read()
-    with open('ussr.wav', 'wb') as file:
+    with open(folderid + '/ussr.wav', 'wb') as file:
         file.write(newfile)
-    filew, _ = librosa.load('ussr.wav', sr=16000)
-    librosa.output.write_wav('ussr3.wav', y=filew, sr=16000)
+    filew, _ = librosa.load(folderid + '/ussr.wav', sr=16000)
+    librosa.output.write_wav(folderid + '/ussr3.wav', y=filew, sr=16000)
+
+    listener_obj = listen.Listener(credentials, folderid + '/ussr3.wav')
+    speaker_obj = speaker.Speaker(credentials, folderid + '/')
 
     listener_obj.listen()
     received = listener_obj.last_result()
     transform(received)
     try:
-        os.remove("ussr.wav")
-        os.remove("ussr3.wav")
+        os.remove(folderid + "/ussr.wav")
+        os.remove(folderid + "/ussr3.wav")
     except:
         print('error')
     finally:
@@ -115,13 +125,14 @@ def send_audio():
     speaker_obj.speak()
 
     return send_file(
-        'outputaudio.wav',
+        folderid + '/outputaudio.wav',
         mimetype="blob",
         as_attachment=True,
         attachment_filename="result.wav")
 
 
 if __name__ == "__main__":
+    global credentials
     stop_words = set(stopwords.words('english'))
     CORS(app, resources={r"/*": {"origins": "*"}})
     with open('./credentials.cred') as f:
@@ -129,6 +140,4 @@ if __name__ == "__main__":
         global listener_obj
 
         credentials = json.load(f)
-        listener_obj = listen.Listener(credentials, 'ussr3.wav')
-        speaker_obj = speaker.Speaker(credentials)
     app.run(host='0.0.0.0', debug=False)
