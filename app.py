@@ -9,7 +9,6 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import librosa
-import librosa.display
 
 global credentials
 global listener_obj
@@ -24,9 +23,6 @@ nltk.download('stopwords')
 nltk.download('punkt')
 
 app = Flask(__name__)
-
-stop_words = set(stopwords.words('english'))
-
 
 
 def domain_aircraft(atc_call):
@@ -104,14 +100,6 @@ def send_audio():
     filew, _ = librosa.load('ussr.wav', sr=16000)
     librosa.output.write_wav('ussr3.wav', y=filew, sr=16000)
 
-    with open('./credentials.cred') as f:
-        global speaker_obj
-        global listener_obj
-
-        credentials = json.load(f)
-        listener_obj = listen.Listener(credentials, 'ussr3.wav')
-        speaker_obj = speaker.Speaker(credentials)
-
     listener_obj.listen()
     received = listener_obj.last_result()
     transform(received)
@@ -126,7 +114,15 @@ def send_audio():
         attachment_filename="result.wav")
 
 
-CORS(app, resources={r"/*": {"origins": "*"}})
-# sys.path.append('/pythonenv3.8/lib/python3.8/site-packages')
-app.run(host='0.0.0.0', debug=False)
+if __name__ == "__main__":
+    stop_words = set(stopwords.words('english'))
+    CORS(app, resources={r"/*": {"origins": "*"}})
+    with open('./credentials.cred') as f:
+        global speaker_obj
+        global listener_obj
+
+        credentials = json.load(f)
+        listener_obj = listen.Listener(credentials, 'ussr3.wav')
+        speaker_obj = speaker.Speaker(credentials)
+    app.run(host='0.0.0.0', debug=False)
 
