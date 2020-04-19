@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from flask import send_file
 import json
+import os
 import recognition.listener as listen
 import synthesis.speaker as speaker
 import telemetry.atc_log as logger
@@ -39,6 +40,7 @@ def domain_aircraft(atc_call):
             atc_call = atc_call.replace(matched[0], " aircraft_ref ")
     return atc_call
 
+
 def domain_callsigns(atc_call):
     global callsign
 
@@ -53,6 +55,7 @@ def domain_callsigns(atc_call):
             callsign = name
             atc_call = atc_call.replace(matched[0], " callsign_ref ")
     return atc_call
+
 
 def domain_runway(atc_call):
     global runway
@@ -83,11 +86,7 @@ def transform(recieved_call):
     logger.log_event("Recognized: {}".format(filtered_sentence))
     for i in range(len(filtered_sentence)):
         if (filtered_sentence[i] == "callsign_ref"):
-            callsign_count = filtered_sentence[i+1]
-
-
-
-
+            callsign_count = filtered_sentence[i + 1]
 
 
 @app.route('/sendaudio', methods=['POST', 'GET'])
@@ -103,10 +102,18 @@ def send_audio():
     listener_obj.listen()
     received = listener_obj.last_result()
     transform(received)
+    try:
+        os.remove("ussr.wav")
+        os.remove("ussr3.wav")
+    except:
+        print('error')
+    finally:
+        print('done')
 
     speaker_obj.synthesise(
         callsign + callsign_count + "!" + " Nellis Tower, taxi to and hold short of runway " + runway)
     speaker_obj.speak()
+
     return send_file(
         'outputaudio.wav',
         mimetype="blob",
@@ -125,4 +132,3 @@ if __name__ == "__main__":
         listener_obj = listen.Listener(credentials, 'ussr3.wav')
         speaker_obj = speaker.Speaker(credentials)
     app.run(host='0.0.0.0', debug=False)
-
