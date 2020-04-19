@@ -1,6 +1,5 @@
 from flask import Flask, request
-# from flask_cors import CORS
-import sys
+from flask_cors import CORS
 from flask import send_file
 import json
 import recognition.listener as listen
@@ -118,7 +117,7 @@ def send_audio():
     transform(received)
 
     speaker_obj.synthesise(
-        callsign + callsign_count + "!" + " Nellis Tower, taxi to and hold short of, runway " + runway)
+        callsign + callsign_count + "!" + " Nellis Tower, taxi to and hold short of runway " + runway)
     speaker_obj.speak()
     return send_file(
         'outputaudio.wav',
@@ -127,7 +126,7 @@ def send_audio():
         attachment_filename="result.wav")
 
 
-# CORS(app, resources={r"/*": {"origins": "*"}})
-sys.path.append('/pythonenv3.8/lib/python3.8/site-packages')
-app.run(port=80, debug=False)
+CORS(app, resources={r"/*": {"origins": "*"}})
+# sys.path.append('/pythonenv3.8/lib/python3.8/site-packages')
+app.run(host='0.0.0.0', debug=False)
 
