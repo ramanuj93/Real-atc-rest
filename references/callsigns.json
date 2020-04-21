@@ -1,10 +1,10 @@
 {
   "Fiend" : ["fiend", "seen", "feen", "fee"],
   "Inferno" : ["inferno", "internal", "infernal", "front"],
-  "Torch" : ["torch", "porch"],
-  "Rebel" : ["rebel", "rubble"],
+  "Torch" : ["torch", "porch", "touch"],
+  "Rebel" : ["rebel", "rubble", "rabble"],
   "Devil" : ["devil", "level", "bevil"],
   "Roman" : ["roman"],
   "Victory" : ["victory", "v1", "v2", "v3", "v4"],
-  "Sheep" : ["sheep", "shee"]
+  "Sheep" : ["sheep", "shee", "cheap", "keep", "shape"]
 }

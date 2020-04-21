@@ -95,6 +95,10 @@ def transform(recieved_call):
 def send_audio():
     global listener_obj
     global speaker_obj
+    global callsign
+    global callsign_count
+    global runway
+    global aircraft
 
     resp = request.files
     print(resp)
@@ -111,6 +115,10 @@ def send_audio():
 
     listener_obj.listen()
     received = listener_obj.last_result()
+    callsign = None
+    callsign_count = None
+    runway = None
+    aircraft = None
     transform(received)
     try:
         os.remove(folderid + "/ussr.wav")
@@ -119,9 +127,14 @@ def send_audio():
         print('error')
     finally:
         print('done')
-
-    speaker_obj.synthesise(
-        callsign + callsign_count + "!" + " Nellis Tower, taxi to and hold short of runway " + runway)
+    voice_text = 'This is Nellis Tower? Say againplease?'
+    if callsign and runway:
+        voice_text = callsign + callsign_count + "!" + " Nellis Tower, taxi-to-and-hold-short-of-runway " + runway
+    elif callsign and aircraft:
+        voice_text = callsign + callsign_count + "! Nellis Tower, say which-runway-please?"
+    elif callsign:
+        voice_text = callsign + callsign_count + "! Nellis Tower, repeatlast?"
+    speaker_obj.synthesise(voice_text)
     speaker_obj.speak()
 
     return send_file(

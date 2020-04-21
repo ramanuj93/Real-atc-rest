@@ -21,9 +21,9 @@
   <component name="ChangeListManager">
     <list default="true" id="496f95d7-6b80-45db-bf30-d1537b2da963" name="Default Changelist" comment="add stuff">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/references/callsigns.json" beforeDir="false" afterPath="$PROJECT_DIR$/references/callsigns.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/synthesis/speaker.py" beforeDir="false" afterPath="$PROJECT_DIR$/synthesis/speaker.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -277,7 +277,14 @@
       <option name="project" value="LOCAL" />
       <updated>1587291425290</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="multi user">
+      <created>1587292627992</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1587292627992</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -304,7 +311,8 @@
     <MESSAGE value="configure azure dependency" />
     <MESSAGE value="add docukerized project" />
     <MESSAGE value="update files" />
-    <option name="LAST_COMMIT_MESSAGE" value="update files" />
+    <MESSAGE value="multi user" />
+    <option name="LAST_COMMIT_MESSAGE" value="multi user" />
   </component>
   <component name="WindowStateProjectService">
     <state x="451" y="210" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1587175550220">
@@ -319,22 +327,22 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="751" y="297" key="#xdebugger.evaluate/67.27.1853.1053@67.27.1853.1053" timestamp="1587205255306" />
-    <state width="1830" height="278" key="GridCell.Tab.0.bottom" timestamp="1587292493884">
+    <state width="1830" height="278" key="GridCell.Tab.0.bottom" timestamp="1587433340535">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1830" height="278" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1587292493884" />
-    <state width="1830" height="278" key="GridCell.Tab.0.center" timestamp="1587292493884">
+    <state width="1830" height="278" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1587433340535" />
+    <state width="1830" height="278" key="GridCell.Tab.0.center" timestamp="1587433340533">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1830" height="278" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1587292493884" />
-    <state width="1830" height="278" key="GridCell.Tab.0.left" timestamp="1587292493883">
+    <state width="1830" height="278" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1587433340533" />
+    <state width="1830" height="278" key="GridCell.Tab.0.left" timestamp="1587433340532">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1830" height="278" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1587292493883" />
-    <state width="1830" height="278" key="GridCell.Tab.0.right" timestamp="1587292493884">
+    <state width="1830" height="278" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1587433340532" />
+    <state width="1830" height="278" key="GridCell.Tab.0.right" timestamp="1587433340533">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1830" height="278" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1587292493884" />
+    <state width="1830" height="278" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1587433340533" />
     <state width="1830" height="344" key="GridCell.Tab.1.bottom" timestamp="1587205270878">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
@@ -355,10 +363,10 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="755" y="236" width="466" height="633" key="RollbackChangesDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1587199478874" />
-    <state x="482" y="187" key="SettingsEditor" timestamp="1587276820161">
+    <state x="482" y="187" key="SettingsEditor" timestamp="1587407753875">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="482" y="187" key="SettingsEditor/67.27.1853.1053@67.27.1853.1053" timestamp="1587276820161" />
+    <state x="482" y="187" key="SettingsEditor/67.27.1853.1053@67.27.1853.1053" timestamp="1587407753875" />
     <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1587186707977">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
