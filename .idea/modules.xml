@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Real-atc-rest.iml" filepath="$PROJECT_DIR$/.idea/Real-atc-rest.iml" />
+      <module fileurl="file://$USER_HOME$/PycharmProjects/TextPermutations/.idea/TextPermutations.iml" filepath="$USER_HOME$/PycharmProjects/TextPermutations/.idea/TextPermutations.iml" />
     </modules>
   </component>
 </project>

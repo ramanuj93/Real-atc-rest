@@ -5,7 +5,9 @@ class Listener:
     def __init__(self, credentials, audio):
         speech_key = credentials['speech_key']
         service_region = credentials['service_region']
+        endpoint = 'b52a4cd1-00a0-4d5c-b911-52128b48f597'
         self._speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
+        self._speech_config.endpoint_id = endpoint
         self.audioSource = audio
         self._audio_config = None
         self._speech_recognizer = None

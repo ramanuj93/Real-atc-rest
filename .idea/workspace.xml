@@ -20,10 +20,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="496f95d7-6b80-45db-bf30-d1537b2da963" name="Default Changelist" comment="add stuff">
+      <change beforePath="$PROJECT_DIR$/.idea/Real-atc-rest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Real-atc-rest.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recognition/listener.py" beforeDir="false" afterPath="$PROJECT_DIR$/recognition/listener.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/references/callsigns.json" beforeDir="false" afterPath="$PROJECT_DIR$/references/callsigns.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/synthesis/speaker.py" beforeDir="false" afterPath="$PROJECT_DIR$/synthesis/speaker.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,6 +57,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -125,9 +129,53 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="TextPermutations" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$USER_HOME$/PycharmProjects/TextPermutations" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$USER_HOME$/PycharmProjects/TextPermutations/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="speaker" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Real-atc-rest" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/synthesis" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/synthesis/speaker.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.app" />
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.speaker" />
         <item itemvalue="Python.listener" />
         <item itemvalue="Python.app_demo" />
       </list>
@@ -284,7 +332,14 @@
       <option name="project" value="LOCAL" />
       <updated>1587292627992</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="work save">
+      <created>1587453820723</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1587453820723</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -312,7 +367,8 @@
     <MESSAGE value="add docukerized project" />
     <MESSAGE value="update files" />
     <MESSAGE value="multi user" />
-    <option name="LAST_COMMIT_MESSAGE" value="multi user" />
+    <MESSAGE value="work save" />
+    <option name="LAST_COMMIT_MESSAGE" value="work save" />
   </component>
   <component name="WindowStateProjectService">
     <state x="451" y="210" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1587175550220">
@@ -327,22 +383,22 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="751" y="297" key="#xdebugger.evaluate/67.27.1853.1053@67.27.1853.1053" timestamp="1587205255306" />
-    <state width="1830" height="278" key="GridCell.Tab.0.bottom" timestamp="1587433340535">
+    <state width="1830" height="278" key="GridCell.Tab.0.bottom" timestamp="1587849406649">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1830" height="278" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1587433340535" />
-    <state width="1830" height="278" key="GridCell.Tab.0.center" timestamp="1587433340533">
+    <state width="1830" height="278" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1587849406649" />
+    <state width="1830" height="278" key="GridCell.Tab.0.center" timestamp="1587849406648">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1830" height="278" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1587433340533" />
-    <state width="1830" height="278" key="GridCell.Tab.0.left" timestamp="1587433340532">
+    <state width="1830" height="278" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1587849406648" />
+    <state width="1830" height="278" key="GridCell.Tab.0.left" timestamp="1587849406648">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1830" height="278" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1587433340532" />
-    <state width="1830" height="278" key="GridCell.Tab.0.right" timestamp="1587433340533">
+    <state width="1830" height="278" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1587849406648" />
+    <state width="1830" height="278" key="GridCell.Tab.0.right" timestamp="1587849406649">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1830" height="278" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1587433340533" />
+    <state width="1830" height="278" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1587849406649" />
     <state width="1830" height="344" key="GridCell.Tab.1.bottom" timestamp="1587205270878">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
@@ -371,6 +427,10 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="588" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1053@67.27.1853.1053" timestamp="1587186707977" />
+    <state x="772" y="171" width="432" height="763" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1587496154629">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="772" y="171" width="432" height="763" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/67.27.1853.1053@67.27.1853.1053" timestamp="1587496154629" />
     <state x="764" y="467" width="448" height="170" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1587176642050">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>

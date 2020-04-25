@@ -8,6 +8,7 @@ class Speaker:
         speech_key = credentials['speech_key']
         service_region = credentials['service_region']
         self._speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
+        # self._speech_config.set_properties()
         voice = "Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)"
         self._speech_config.speech_synthesis_voice_name = voice
         self.__result = None

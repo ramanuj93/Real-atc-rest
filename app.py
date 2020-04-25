@@ -21,6 +21,9 @@ global callsign_count
 global aircraft
 global aircraft_count
 global runway
+global flight_runway_map
+
+flight_runway_map = dict()
 
 nltk.download('stopwords')
 nltk.download('punkt')
@@ -79,7 +82,6 @@ def transform(recieved_call):
     global callsign
     global callsign_count
 
-    recieved_call = recieved_call.lower()
     received = domain_aircraft(recieved_call)
     received = domain_callsigns(received)
     received = domain_runway(received)
@@ -91,17 +93,33 @@ def transform(recieved_call):
             callsign_count = filtered_sentence[i + 1]
 
 
-@app.route('/sendaudio', methods=['POST', 'GET'])
-def send_audio():
+def isTaxi(recieved_call):
+    if "ready" in recieved_call:
+        if "taxi" in recieved_call:
+            return True
+
+    return False
+
+
+def isHoldShort(recieved_call):
+    if "holding" in recieved_call:
+        if "short" in recieved_call:
+            return True
+
+    return False
+
+
+@app.route('/talkatc', methods=['POST'])
+def talkatc():
     global listener_obj
     global speaker_obj
     global callsign
     global callsign_count
     global runway
     global aircraft
+    global flight_runway_map
 
     resp = request.files
-    print(resp)
 
     folderid = tempfile.mkdtemp()
     newfile = resp['recorded'].read()
@@ -115,25 +133,98 @@ def send_audio():
 
     listener_obj.listen()
     received = listener_obj.last_result()
+    print(received)
     callsign = None
     callsign_count = None
     runway = None
     aircraft = None
+    received = received.lower()
     transform(received)
+
     try:
         os.remove(folderid + "/ussr.wav")
         os.remove(folderid + "/ussr3.wav")
     except:
         print('error')
-    finally:
-        print('done')
-    voice_text = 'This is Nellis Tower? Say againplease?'
+
+    voice_text = 'This is Nellis Tower? Say again-please?'
+
+    if isTaxi(received):
+        voice_text = callsign + callsign_count + "!" + " Nellis Tower, taxi-to-and-hold-short-of-runway " + runway
+        if callsign and aircraft and runway:
+            flight_runway_map[runway] = [callsign + callsign_count, aircraft]
+
+    elif isHoldShort(received):
+
+        if callsign and runway:
+            if runway not in flight_runway_map:
+                voice_text = callsign + "-" + callsign_count + " What-the-Fuck?... who told you to get there? Ask clearance to taxi first!"
+            elif flight_runway_map[runway] and flight_runway_map[runway][0] == (callsign + callsign_count):
+                voice_text = "{0}-{1}, Nellis Tower, Cleared for takeoff: runway {2}, Switch-to-departure on two-five-zero".format(
+                    callsign, callsign_count, runway)
+                flight_runway_map[runway] = None
+            else:
+                voice_text = "Nope! Hang on..."
+
+
+    v1 = "Runway 3-left via delta-foxtrot. Inferno-1!"
+    v2 = "Inferno-1, Nellis Tower, Cleared for takeoff: runway 3-left, Switch-to-departure on two five zero"
+    speaker_obj.synthesise(voice_text)
+    speaker_obj.speak()
+
+    return send_file(
+        folderid + '/outputaudio.wav',
+        mimetype="blob",
+        as_attachment=True,
+        attachment_filename="result.wav")
+
+
+@app.route('/sendaudio', methods=['POST', 'GET'])
+def send_audio():
+    global listener_obj
+    global speaker_obj
+    global callsign
+    global callsign_count
+    global runway
+    global aircraft
+
+    resp = request.files
+
+    folderid = tempfile.mkdtemp()
+    newfile = resp['recorded'].read()
+    with open(folderid + '/ussr.wav', 'wb') as file:
+        file.write(newfile)
+    filew, _ = librosa.load(folderid + '/ussr.wav', sr=16000)
+    librosa.output.write_wav(folderid + '/ussr3.wav', y=filew, sr=16000)
+
+    listener_obj = listen.Listener(credentials, folderid + '/ussr3.wav')
+    speaker_obj = speaker.Speaker(credentials, folderid + '/')
+
+    listener_obj.listen()
+    received = listener_obj.last_result()
+    print(received)
+    callsign = None
+    callsign_count = None
+    runway = None
+    aircraft = None
+    received = received.lower()
+    transform(received)
+
+    try:
+        os.remove(folderid + "/ussr.wav")
+        os.remove(folderid + "/ussr3.wav")
+    except:
+        print('error')
+
+    voice_text = 'This is Nellis Tower? Say again-please?'
     if callsign and runway:
         voice_text = callsign + callsign_count + "!" + " Nellis Tower, taxi-to-and-hold-short-of-runway " + runway
     elif callsign and aircraft:
         voice_text = callsign + callsign_count + "! Nellis Tower, say which-runway-please?"
     elif callsign:
         voice_text = callsign + callsign_count + "! Nellis Tower, repeatlast?"
+    v1 = "Runway 3-left via delta-foxtrot. Inferno-1!"
+    v2 = "Inferno-1, Nellis Tower, Cleared for takeoff runway: 3-left, Switch-to-departure on 2-5-0"
     speaker_obj.synthesise(voice_text)
     speaker_obj.speak()
 
