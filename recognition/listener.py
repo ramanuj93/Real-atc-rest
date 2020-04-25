@@ -2,21 +2,20 @@ import azure.cognitiveservices.speech as speechsdk
 
 
 class Listener:
-    def __init__(self, credentials, audio):
+    def __init__(self, credentials):
         speech_key = credentials['speech_key']
         service_region = credentials['service_region']
         endpoint = 'b52a4cd1-00a0-4d5c-b911-52128b48f597'
         self._speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
         self._speech_config.endpoint_id = endpoint
-        self.audioSource = audio
         self._audio_config = None
         self._speech_recognizer = None
         self.__recognized = ''
 
-    def listen(self):
+    def listen(self, audio):
         print("Say something...")
         # Creates a recognizer with the given settings
-        self._audio_config = speechsdk.audio.AudioConfig(filename=self.audioSource)
+        self._audio_config = speechsdk.audio.AudioConfig(filename=audio)
         self._speech_recognizer = speechsdk.SpeechRecognizer(speech_config=self._speech_config, audio_config=self._audio_config)
         # Starts speech recognition, and returns after a single utterance is recognized. The end of a
         # single utterance is determined by listening for silence at the end or until a maximum of 15

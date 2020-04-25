@@ -1,7 +1,7 @@
 import json
 import recognition.listener as listen
 import synthesis.speaker as speaker
-import telemetry.atc_log as logger
+import util.atc_log as logger
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
