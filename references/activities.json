@@ -1,0 +1,7 @@
+{
+  "taxi" : ["taxiing", "taxi"],
+  "hold" : [ "holding", "hold"],
+  "inbound" : ["inbound"],
+  "depart" : ["departing", "depart"],
+  "abeam" : ["abeam"]
+}

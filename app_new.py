@@ -12,12 +12,23 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import librosa
 import random
+from recognition import callinterpreter
 
 
 nltk.download('stopwords')
 nltk.download('punkt')
 
 app = Flask(__name__)
+
+global credentials
+global listener_obj
+global speaker_obj
+global callsign
+global callsign_count
+global aircraft
+global aircraft_count
+global runway
+global flight_runway_map
 
 
 @app.route('/sendaudio', methods=['POST', 'GET'])
@@ -28,6 +39,7 @@ def send_audio():
     global callsign_count
     global runway
     global aircraft
+    global interpret_obj
 
     resp = request.files
 
@@ -41,15 +53,22 @@ def send_audio():
     listener_obj = listen.Listener(credentials)
     speaker_obj = speaker.Speaker(credentials, folderid + '/')
 
-    listener_obj.listen(folderid + '/ussr3.wav')
-    received = listener_obj.last_result()
-    print(received)
+    # listener_obj.listen(folderid + '/ussr3.wav')
+    # received = listener_obj.last_result()
+    # print(received)
     callsign = None
     callsign_count = None
     runway = None
     aircraft = None
-    received = received.lower()
+    interpret_obj.receive(folderid + '/ussr3.wav')
+    stuff = interpret_obj.get_atc_call()
+    print(interpret_obj._recievedText)
+    print(interpret_obj.get_atc_call().airport)
+    print(interpret_obj.get_atc_call().runway)
+    print(interpret_obj.get_atc_call().callsign)
+    print(interpret_obj.get_atc_call().aircraft)
 
+    return 'done'
     return send_file(
         folderid + '/outputaudio.wav',
         mimetype="blob",
@@ -59,11 +78,13 @@ def send_audio():
 
 if __name__ == "__main__":
     global credentials
+    global interpret_obj
     stop_words = set(stopwords.words('english'))
     CORS(app, resources={r"/*": {"origins": "*"}})
     with open('./credentials.cred') as f:
         global speaker_obj
         global listener_obj
-
         credentials = json.load(f)
-    app.run(host='0.0.0.0', debug=False)
+        interpret_obj = callinterpreter.CallInterpreter(credentials)
+
+    app.run(host='0.0.0.0', debug=True)
