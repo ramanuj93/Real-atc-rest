@@ -1,18 +1,42 @@
-from elements.Controller import GroundController, TowerController
+from elements.Controller import GroundController, TowerController, AIRCRAFT, FLIGHT_STATE
+
+
+class FlightObject:
+    def __init__(self, callsign: str, type_air: AIRCRAFT, status: FLIGHT_STATE,
+                 size,
+                 altitude=None,
+                 radial=None,
+                 distance=None,
+                 runway=None):
+        self.callsign = callsign,
+        self.type_air = type_air,
+        self.status = status,
+        self.size = size,
+        self.altitude = altitude,
+        self.radial = radial,
+        self.distance = distance,
+        self.runway = runway
 
 
 class Runway:
 
-    def __init__(self):
+    def __init__(self, hold_size):
+        self._hold_size = hold_size
         self._hold_short = []
         self._active = []
         self._incoming = []
 
     def add_flight_taxi(self, flight):
-        self._hold_short.append(flight)
+        if len(self._hold_short) < self._hold_size:
+            self._hold_short.append(flight)
+            return True
+        return False
 
     def add_flight_active(self, flight):
-        self._active.append(flight)
+        if len(self._active) == 0:
+            self._active.append(flight)
+            return True
+        return False
 
     def clear_takeoff(self, flight):
         self._active.append(flight)
@@ -23,16 +47,22 @@ class Runway:
 
 class Airport:
 
-    def __init__(self, name, runways_map):
-        self._runways_map = runways_map
-        self._ground = GroundController(name + '_ground', self, runways_map)
-        self._tower = TowerController(name + '_tower', self, runways_map)
+    def __init__(self, name, runways_map: {[str]: FlightObject}):
+        self._runways_map: {[str]: FlightObject} = runways_map
+        self._ground = GroundController(104, name + '_ground', self)
+        self._tower = TowerController(105, name + '_tower', self)
 
-    def register_taxi(self, flight, runway):
-        self._runways_map[runway].add_flight_taxi(flight)
+    def register_taxi(self, flight: FlightObject):
+        for runway in self._runways_map.keys():
+            if self._runways_map[runway].add_flight_taxi(flight):
+                return runway
+        return None
 
     def register_hold_runway(self, flight, runway):
-        self._runways_map[runway].add_flight_active(flight)
+        return self._runways_map[runway].add_flight_active(flight)
+
+    def register_take_active(self, flight, runway):
+        return self._runways_map[runway].add_flight_active(flight)
 
     def allow_takeoff(self, flight, runway):
         self._runways_map[runway].clear_takeoff(flight)
@@ -41,9 +71,6 @@ class Airport:
         return
 
     def call_hold_short(self, flight, runway):
-        return
-
-    def call_take_active(self, flight, runway):
         return
 
     def call_departure(self, flight, runway):
