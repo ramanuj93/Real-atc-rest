@@ -1,7 +1,4 @@
-import abc
 from enum import Enum
-
-from elements.Airport import FlightObject, Airport
 
 
 class ATC_RESPONSE(Enum):
@@ -30,8 +27,26 @@ class AIRCRAFT(Enum):
     HORNET = 1,
     VIPER = 2,
     TOMCAT = 3,
-    HARRIER = 4
+    HARRIER = 4,
+    HAWG = 5,
+    UNKNOWN = 6
 
+
+class FlightObject:
+    def __init__(self, callsign: str, type_air: AIRCRAFT, status: FLIGHT_STATE,
+                 size,
+                 altitude=None,
+                 radial=None,
+                 distance=None,
+                 runway: str = None):
+        self.callsign = callsign
+        self.type_air = type_air
+        self.status = status
+        self.size = size
+        self.altitude = altitude
+        self.radial = radial
+        self.distance = distance
+        self.runway: str = runway
 
 class CallObject:
 
@@ -84,6 +99,13 @@ class TaxiCall(CallObject):
                          size=size, runway=runway, type_call=FLIGHT_STATE.TAXI)
 
 
+class HoldShortRunwayCall(CallObject):
+
+    def __init__(self, freq, recipient, caller, runway):
+        super().__init__(freq, recipient=recipient, caller=caller,
+                         runway=runway, type_call=FLIGHT_STATE.HOLD_SHORT_RUNWAY)
+
+
 class RunwayEnterCall(CallObject):
 
     def __init__(self, freq, recipient, caller):
@@ -111,42 +133,62 @@ class InboundCall(CallObject):
 
 class Controller:
 
-    def __init__(self, freq: float, name: str, base_ref: Airport):
+    def __init__(self, freq: float, name: str, base_ref):
         self._freq = freq
         self._name = name
         self._base_ref = base_ref
         self._registry = []
-        self._aircraft_map: {[str]: FlightObject} = {}
 
     def _add_flight(self, plane):
         self._registry.append(plane)
         return
 
-    @abc.abstractmethod
-    def __process_transmission(self, call: CallObject):
-        return
-
-    def __receive_transmission(self, call: CallObject):
-        if call.freq == self._freq:
-            self.__process_transmission(call)
-        return
-
 
 class TowerController(Controller):
+
+    def receive_transmission(self, call: CallObject):
+        if call.freq == self._freq:
+            return self.__process_transmission(call)
+        return
+
     def __process_transmission(self, call: CallObject):
-        if call.type_call == FLIGHT_STATE.TAXI:
-            return
+        response: ControllerResponseCall = ControllerResponseCall(self._freq, ATC_RESPONSE.STANDBY, caller=self._name)
+        flight: FlightObject = self._base_ref.aircraft_map.get(call.caller, None)
+        if call.type_call == FLIGHT_STATE.TAKE_RUNWAY:
+            if not flight or flight.status != FLIGHT_STATE.HOLD_SHORT_RUNWAY:
+                response.deny()
+            else:
+                if self._base_ref.register_take_active(flight.callsign, flight.runway):
+                    flight.status = FLIGHT_STATE.TAKE_RUNWAY
+                    response.grant()
+                else:
+                    response.standby()
+        elif call.type_call == FLIGHT_STATE.TAKEOFF:
+            if not flight or flight.status != FLIGHT_STATE.TAKE_RUNWAY:
+                response.deny()
+            else:
+                self._base_ref.allow_takeoff(flight.size, flight.runway)
+                flight.status = FLIGHT_STATE.TAKEOFF
+                response.grant()
+                self._base_ref.aircraft_map[call.caller] = flight
+
+        return response
 
 
 class GroundController(Controller):
 
+    def receive_transmission(self, call: CallObject):
+        if call.freq == self._freq:
+            return self.__process_transmission(call)
+        return
+
     def __process_transmission(self, call):
-        response: ControllerResponseCall = ControllerResponseCall(freq=self._freq)
-        flight: FlightObject = self._aircraft_map.get(call.caller, None)
+        response: ControllerResponseCall = ControllerResponseCall(self._freq, call.type_call, recipient=call.caller, caller=self._name)
+        flight: FlightObject = self._base_ref.aircraft_map.get(call.caller, None)
         if call.type_call == FLIGHT_STATE.TAXI:
             if not flight:
                 flight = FlightObject(call.caller, call.type_air, FLIGHT_STATE.NEW, call.size)
-            runway_assigned = self._base_ref.register_taxi(flight.callsign)
+            runway_assigned = self._base_ref.register_taxi(flight.size)
             if runway_assigned:
                 response.runway = runway_assigned
                 flight.runway = runway_assigned
@@ -155,22 +197,15 @@ class GroundController(Controller):
             else:
                 flight.status = FLIGHT_STATE.WAIT_FOR_TAXI
                 response.standby()
-            self._aircraft_map[call.caller] = flight
+            self._base_ref.aircraft_map[call.caller] = flight
         elif call.type_call == FLIGHT_STATE.HOLD_SHORT_RUNWAY:
             if not flight or flight.status != FLIGHT_STATE.TAXI:
                 response.deny()
             else:
-                self._base_ref.register_take_active(flight.callsign)
+                self._base_ref.register_hold_runway(flight.size, flight.runway)
                 flight.status = FLIGHT_STATE.HOLD_SHORT_RUNWAY
                 response.acknowledge()
-        elif call.type_call == FLIGHT_STATE.TAKE_RUNWAY:
-            if not flight or flight.status != FLIGHT_STATE.HOLD_SHORT_RUNWAY:
-                response.deny()
-            else:
-                self._base_ref.register_take_active(flight.callsign)
-                flight.status = FLIGHT_STATE.TAKE_RUNWAY
-                response.grant()
-
+                self._base_ref.aircraft_map[call.caller] = flight
 
         return response
 

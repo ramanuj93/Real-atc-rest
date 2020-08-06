@@ -1,8 +1,8 @@
 {
   "Nellis" : {
-              "3 left" : ["3 left"],
-              "3 right" : ["3 right"],
-              "21 left" : ["2 one left", "21 left"],
-              "21 right" : ["2 one right", "21 right"]
+              "03L" : ["3 left"],
+              "03R" : ["3 right"],
+              "21L" : ["2 one left", "21 left"],
+              "21R" : ["2 one right", "21 right"]
               }
 }

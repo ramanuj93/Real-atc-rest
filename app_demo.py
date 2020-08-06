@@ -87,7 +87,7 @@ with open('./credentials.cred') as f:
 
     credentials = json.load(f)
     listener_obj = listen.Listener(credentials)
-    speaker_obj = speaker.Speaker(credentials)
+    speaker_obj = speaker.Speaker(credentials, '/home/ramanuj/box')
 
 listener_obj.listen()
 received = listener_obj.last_result()

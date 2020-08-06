@@ -12,11 +12,11 @@ class Listener:
         self._speech_recognizer = None
         self.__recognized = ''
 
-    def listen(self, audio):
+    def listen(self):
         print("Say something...")
         # Creates a recognizer with the given settings
-        self._audio_config = speechsdk.audio.AudioConfig(filename=audio)
-        self._speech_recognizer = speechsdk.SpeechRecognizer(speech_config=self._speech_config, audio_config=self._audio_config)
+        self._audio_config = speechsdk.audio
+        self._speech_recognizer = speechsdk.SpeechRecognizer(speech_config=self._speech_config)
         # Starts speech recognition, and returns after a single utterance is recognized. The end of a
         # single utterance is determined by listening for silence at the end or until a maximum of 15
         # seconds of audio is processed.  The task returns the recognition text as result.

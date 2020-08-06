@@ -15,9 +15,6 @@ import random
 from recognition import callinterpreter
 
 
-nltk.download('stopwords')
-nltk.download('punkt')
-
 app = Flask(__name__)
 
 global credentials
