@@ -1,8 +1,8 @@
 import json
 import nltk
 
-from constants.EnumATC import AIRCRAFT
-from constants.HelperEntity import TaxiCall
+from constants.EnumATC import AIRCRAFT, FLIGHT_STATE
+from constants.HelperEntity import TaxiCall, CallObject, HoldShortRunwayCall, RunwayEnterCall
 from util import Util as Util
 
 numbers = ['one', 'two', 'three', 'four', '1', '2', '3', '4']
@@ -103,3 +103,10 @@ class Interpreter:
         if activity == "taxi":
             return TaxiCall(104, airport, flight_name, self.__get_recognized_aircraft_type(aircraft),
                             flight_size, runway)
+        if activity == "hold":
+            return HoldShortRunwayCall(104, airport, flight_name, runway)
+
+        if activity == "active":
+            return RunwayEnterCall(104, airport, flight_name)
+
+        return CallObject(104, FLIGHT_STATE.UNKNOWN)

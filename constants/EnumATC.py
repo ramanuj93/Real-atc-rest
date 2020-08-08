@@ -5,22 +5,25 @@ class ATC_RESPONSE(Enum):
     GRANTED = 1,
     DENIED = 2,
     STANDBY = 3,
-    ACKNOWLEDGE = 4
+    ACKNOWLEDGE = 4,
+    UNCLEAR = 5
 
 
 class FLIGHT_STATE(Enum):
     TAXI = 1,
-    HOLD_SHORT_RUNWAY = 2,
-    TAKE_RUNWAY = 3,
-    TAKEOFF = 4,
-    INBOUND = 5,
-    INITIAL = 6,
-    FINAL = 7,
-    CLEAR_RUNWAY = 8,
-    DEPART_RUNWAY = 9,
-    UNKNOWN = 10,
-    NEW = 11,
-    WAIT_FOR_TAXI = 12
+    TAXI_HOLD = 2,
+    HOLD_SHORT_RUNWAY = 3,
+    TAKE_RUNWAY = 4,
+    TAKEOFF = 5,
+    INBOUND = 6,
+    INITIAL = 7,
+    FINAL = 8,
+    CLEAR_RUNWAY = 9,
+    DEPART_RUNWAY = 10,
+    UNKNOWN = 11,
+    NEW = 12,
+    WAIT_FOR_TAXI = 13
+
 
 class AIRCRAFT(Enum):
     HORNET = 1,

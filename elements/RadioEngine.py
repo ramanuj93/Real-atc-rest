@@ -2,7 +2,6 @@ import threading
 import time
 from typing import Dict
 import util.atc_log as logger
-
 from constants.HelperEntity import CallObject, ControllerResponseCall
 from util.CallQueue import CallQueue
 
@@ -18,8 +17,11 @@ class Transmissions:
             if call.freq not in self._incoming_queue.keys():
                 self._incoming_queue[call.freq] = CallQueue(50)
             self._incoming_queue[call.freq].push(call)
-            logger.log_event('pushed call to request stack for ' + call.caller + ' on  freq: ' + str(call.freq)
-                             + ' stack size is ' + str(self._incoming_queue[call.freq].size()))
+            if call.is_valid():
+                logger.log_event('pushed call to request stack for ' + call.caller + ' on  freq: ' + str(call.freq)
+                                 + ' stack size is ' + str(self._incoming_queue[call.freq].size()))
+            else:
+                logger.log_event('pushed bad call to stack, size is ' + str(self._incoming_queue[call.freq].size()))
 
     def get_request(self, freq) -> CallObject:
         if freq > 0 and freq in self._incoming_queue.keys():
@@ -27,8 +29,11 @@ class Transmissions:
             if result:
                 if result.get_age() > self._timeout:
                     return self.get_request(freq)
-                logger.log_event('retrieved request for ' + result.caller + ' on  freq: ' + str(freq)
-                                 + ' stack size is ' + str(self._incoming_queue[freq].size()))
+                if result.is_valid():
+                    logger.log_event('retrieved request for ' + result.caller + ' on  freq: ' + str(freq)
+                                     + ' stack size is ' + str(self._incoming_queue[freq].size()))
+                else:
+                    logger.log_event('retrieved bad call from stack, size is ' + str(self._incoming_queue[freq].size()))
             return result
 
     def add_response(self, response: ControllerResponseCall):

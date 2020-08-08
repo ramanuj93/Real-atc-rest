@@ -20,6 +20,9 @@ class Controller(threading.Thread):
         self._registry.append(plane)
         return
 
+    def _resolve_unknown_call(self, call):
+        return ControllerResponseCall(self._radio.get_frequency(), ATC_RESPONSE.UNCLEAR)
+
     def close(self):
         self._exit = True
 
@@ -29,8 +32,13 @@ class TowerController(Controller):
     def receive_transmission(self):
         new_call = self._radio.listen()
         if new_call:
-            response = self.__process_transmission(new_call)
-            self._radio.respond(response)
+            if new_call.type_call in [FLIGHT_STATE.TAKE_RUNWAY, FLIGHT_STATE.TAKEOFF, FLIGHT_STATE.DEPART_RUNWAY]:
+                if new_call.is_valid():
+                    response = self.__process_transmission(new_call)
+                    self._radio.respond(response)
+                else:
+                    response = ControllerResponseCall(new_call.freq, type_call=new_call.type_call)
+                    response.clarify(new_call)
         else:
             time.sleep(self._poll_interval)
 
@@ -40,20 +48,28 @@ class TowerController(Controller):
         flight: FlightObject = self._base_ref.aircraft_map.get(call.caller, None)
         if call.type_call == FLIGHT_STATE.TAKE_RUNWAY:
             if not flight or flight.status != FLIGHT_STATE.HOLD_SHORT_RUNWAY:
-                response.deny()
+                response.deny(call)
             else:
                 if self._base_ref.register_take_active(flight.callsign, flight.runway):
                     flight.status = FLIGHT_STATE.TAKE_RUNWAY
-                    response.grant()
+                    response.grant(call)
                 else:
-                    response.standby()
+                    response.standby(call)
         elif call.type_call == FLIGHT_STATE.TAKEOFF:
             if not flight or flight.status != FLIGHT_STATE.TAKE_RUNWAY:
-                response.deny()
+                response.deny(call)
             else:
                 self._base_ref.allow_takeoff(flight.size, flight.runway)
                 flight.status = FLIGHT_STATE.TAKEOFF
-                response.grant()
+                response.grant(call)
+                self._base_ref.aircraft_map[call.caller] = flight
+        elif call.type_call == FLIGHT_STATE.DEPART_RUNWAY:
+            if not flight or flight.status != FLIGHT_STATE.TAKEOFF:
+                response.deny(call)
+            else:
+                self._base_ref.clear_airspace(flight.size, flight.runway)
+                flight.status = FLIGHT_STATE.DEPART_RUNWAY
+                response.grant(call)
                 self._base_ref.aircraft_map[call.caller] = flight
 
         return response
@@ -71,8 +87,12 @@ class GroundController(Controller):
     def receive_transmission(self):
         new_call = self._radio.listen()
         if new_call:
-            if new_call.type_call in [FLIGHT_STATE.TAXI, FLIGHT_STATE.HOLD_SHORT_RUNWAY]:
-                response = self.__process_transmission(new_call)
+            if new_call.type_call in [FLIGHT_STATE.TAXI, FLIGHT_STATE.HOLD_SHORT_RUNWAY, FLIGHT_STATE.TAKE_RUNWAY]:
+                if new_call.is_valid():
+                    response = self.__process_transmission(new_call)
+                else:
+                    response = ControllerResponseCall(new_call.freq, type_call=new_call.type_call)
+                    response.clarify(new_call)
                 self._radio.respond(response)
         else:
             time.sleep(self._poll_interval)
@@ -84,23 +104,36 @@ class GroundController(Controller):
         if call.type_call == FLIGHT_STATE.TAXI:
             if not flight:
                 flight = FlightObject(call.caller, call.type_air, FLIGHT_STATE.NEW, call.size)
-            runway_assigned = self._base_ref.register_taxi(flight.size)
+            runway_assigned, is_clean = self._base_ref.register_taxi(flight.size)
             if runway_assigned:
                 response.runway = runway_assigned
                 flight.runway = runway_assigned
-                flight.status = FLIGHT_STATE.TAXI
-                response.grant()
+                if is_clean:
+                    flight.status = FLIGHT_STATE.TAXI
+                else:
+                    flight.status = FLIGHT_STATE.TAXI_HOLD
+                    response.type_call = FLIGHT_STATE.TAXI_HOLD
+                response.grant(call)
             else:
                 flight.status = FLIGHT_STATE.WAIT_FOR_TAXI
-                response.standby()
+                response.standby(call)
             self._base_ref.aircraft_map[call.caller] = flight
         elif call.type_call == FLIGHT_STATE.HOLD_SHORT_RUNWAY:
-            if not flight or flight.status != FLIGHT_STATE.TAXI:
-                response.deny()
+            if not flight or not (flight.status == FLIGHT_STATE.TAXI or flight.status == FLIGHT_STATE.TAXI_HOLD):
+                response.deny(call)
             else:
                 self._base_ref.register_hold_runway(flight.size, flight.runway)
                 flight.status = FLIGHT_STATE.HOLD_SHORT_RUNWAY
-                response.acknowledge()
+                response.acknowledge(call)
+                self._base_ref.aircraft_map[call.caller] = flight
+        elif call.type_call == FLIGHT_STATE.TAKE_RUNWAY:
+            if not flight or not (flight.status == FLIGHT_STATE.TAXI or flight.status == FLIGHT_STATE.HOLD_SHORT_RUNWAY):
+                response.deny(call)
+            else:
+                self._base_ref.register_take_active(flight.size, flight.runway)
+                flight.status = FLIGHT_STATE.TAKE_RUNWAY
+                response.forward_freq = 105
+                response.acknowledge(call)
                 self._base_ref.aircraft_map[call.caller] = flight
 
         return response
