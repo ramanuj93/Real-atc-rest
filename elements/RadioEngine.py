@@ -2,6 +2,7 @@ import threading
 import time
 from typing import Dict
 import util.atc_log as logger
+from constants.EnumATC import ATC_RESPONSE
 from constants.HelperEntity import CallObject, ControllerResponseCall
 from util.CallQueue import CallQueue
 
@@ -73,8 +74,14 @@ class RadioEngine(threading.Thread):
     def listen(self) -> CallObject:
         return self._message_queue.pop()
 
-    def respond(self, response):
-        self._transmission_ref.add_response(response)
+    def respond(self, response: ControllerResponseCall):
+        if response.grant_status == ATC_RESPONSE.STANDBY:
+            if response.request.grant_status != ATC_RESPONSE.STANDBY:
+                response.request.grant_status = ATC_RESPONSE.STANDBY
+                self._transmission_ref.add_response(response)
+            self._message_queue.push(response.request)
+        else:
+            self._transmission_ref.add_response(response)
 
     def shut_down(self):
         self._exit = True

@@ -107,6 +107,12 @@ class Interpreter:
             return HoldShortRunwayCall(104, airport, flight_name, runway)
 
         if activity == "active":
+            return RunwayEnterCall(105, airport, flight_name)
+
+        if activity == "lineup":
             return RunwayEnterCall(104, airport, flight_name)
+
+        if activity == "depart":
+            return Call
 
         return CallObject(104, FLIGHT_STATE.UNKNOWN)

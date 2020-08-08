@@ -2,6 +2,7 @@
   "taxi" : ["taxiing", "taxi"],
   "hold" : [ "holding", "hold"],
   "active": ["active", "taking"],
+  "lineup": ["lining"],
   "inbound" : ["inbound"],
   "depart" : ["departing", "depart"],
   "abeam" : ["abeam"]

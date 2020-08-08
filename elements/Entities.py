@@ -11,6 +11,7 @@ class Runway:
         self._on_runway = 0
         self._incoming = 0
         self._departing = 0
+        self._on_final = 0
 
     def add_flight_taxi(self, flights) -> (bool, bool):
         if (self._hold_short + self.taxi_to + flights) <= (self._hold_size + 4):
@@ -28,7 +29,7 @@ class Runway:
         return False
 
     def add_flight_active(self, flights):
-        if self._on_runway == 0:
+        if self._on_runway == 0 and self._departing == 0 and self._on_final == 0:
             self._on_runway += flights
             return True
         return False
@@ -45,11 +46,8 @@ class Runway:
             return True
         return False
 
-    def is_runway_clean(self):
-        return
-
     def clear_takeoff(self, flights):
-        if self._on_runway >= flights:
+        if self._on_runway >= flights and self._departing:
             self._on_runway -= flights
             self._departing += flights
             return True
@@ -75,10 +73,11 @@ class Airport:
 
     def activate(self):
         self._ground.start()
-        # self._tower.start()
+        self._tower.start()
 
     def close(self):
         self._ground.close()
+        self._tower.close()
 
     # def receive_transmission(self, call: CallObject):
     #     if call:
@@ -86,24 +85,27 @@ class Airport:
     #             response = self._ground.receive_transmission(call)
     #             return response
 
-    def register_taxi(self, flight: float):
+    def register_taxi(self, flights: float):
         for runway in self._runways_map.keys():
-            runway_assigned, runway_clean = self._runways_map[runway].add_flight_taxi(flight)
+            runway_assigned, runway_clean = self._runways_map[runway].add_flight_taxi(flights)
             if runway_assigned:
                 return runway, runway_clean
         return None, False
 
-    def register_hold_runway(self, flight, runway):
-        if self._runways_map[runway].add_flight_hold_short(flight):
-            return self._runways_map[runway].remove_flight_taxi(flight)
+    def register_hold_runway(self, flights, runway):
+        if self._runways_map[runway].add_flight_hold_short(flights):
+            return self._runways_map[runway].remove_flight_taxi(flights)
         return False
 
-    def register_take_active(self, flights, runway):
+    def register_take_active(self, flights, runway, is_direct=False):
         if self._runways_map[runway].add_flight_active(flights):
-            self._runways_map[runway].remove_flight_hold_short(flights)
+            if is_direct:
+                self._runways_map[runway].remove_flight_taxi(flights)
+            else:
+                self._runways_map[runway].remove_flight_hold_short(flights)
 
     def allow_takeoff(self, flights, runway):
-        self._runways_map[runway].clear_takeoff(flights)
+        return self._runways_map[runway].clear_takeoff(flights)
 
     def clear_airspace(self, flights, runway):
         self._runways_map[runway].clear_airspace(flights)
