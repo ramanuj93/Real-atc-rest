@@ -1,158 +1,42 @@
-from enum import Enum
+import threading
+import time
+from constants.EnumATC import FLIGHT_STATE, ATC_RESPONSE
+from constants.HelperEntity import ControllerResponseCall, CallObject, FlightObject
+from elements.RadioEngine import RadioEngine
 
 
-class ATC_RESPONSE(Enum):
-    GRANTED = 1,
-    DENIED = 2,
-    STANDBY = 3,
-    ACKNOWLEDGE = 4
-
-
-class FLIGHT_STATE(Enum):
-    TAXI = 1,
-    HOLD_SHORT_RUNWAY = 2,
-    TAKE_RUNWAY = 3,
-    TAKEOFF = 4,
-    INBOUND = 5,
-    INITIAL = 6,
-    FINAL = 7,
-    CLEAR_RUNWAY = 8,
-    DEPART_RUNWAY = 9,
-    UNKNOWN = 10,
-    NEW = 11,
-    WAIT_FOR_TAXI = 12
-
-
-class AIRCRAFT(Enum):
-    HORNET = 1,
-    VIPER = 2,
-    TOMCAT = 3,
-    HARRIER = 4,
-    HAWG = 5,
-    UNKNOWN = 6
-
-
-class FlightObject:
-    def __init__(self, callsign: str, type_air: AIRCRAFT, status: FLIGHT_STATE,
-                 size,
-                 altitude=None,
-                 radial=None,
-                 distance=None,
-                 runway: str = None):
-        self.callsign = callsign
-        self.type_air = type_air
-        self.status = status
-        self.size = size
-        self.altitude = altitude
-        self.radial = radial
-        self.distance = distance
-        self.runway: str = runway
-
-class CallObject:
-
-    def __init__(self, freq,
-                 type_call,
-                 caller=None,
-                 recipient=None,
-                 flight=None,
-                 size=None,
-                 type_air=None,
-                 altitude=None,
-                 distance=None,
-                 runway=None,
-                 radial=None,
-                 grant_status=None):
-        self.freq = freq
-        self.caller = caller
-        self.flight = flight
-        self.recipient = recipient
-        self.flight = flight
-        self.size = size
-        self.type_air = type_air
-        self.type_call = type_call
-        self.altitude = altitude
-        self.distance = distance
-        self.runway = runway
-        self.radial = radial
-        self.grant_status = grant_status
-
-
-class ControllerResponseCall(CallObject):
-
-    def grant(self):
-        self.grant_status = ATC_RESPONSE.GRANTED
-
-    def standby(self):
-        self.grant_status = ATC_RESPONSE.STANDBY
-
-    def deny(self):
-        self.grant_status = ATC_RESPONSE.DENIED
-
-    def acknowledge(self):
-        self.grant_status = ATC_RESPONSE.ACKNOWLEDGE
-
-
-class TaxiCall(CallObject):
-
-    def __init__(self, freq, recipient, caller, type_air, size, runway):
-        super().__init__(freq, recipient=recipient, caller=caller, type_air=type_air,
-                         size=size, runway=runway, type_call=FLIGHT_STATE.TAXI)
-
-
-class HoldShortRunwayCall(CallObject):
-
-    def __init__(self, freq, recipient, caller, runway):
-        super().__init__(freq, recipient=recipient, caller=caller,
-                         runway=runway, type_call=FLIGHT_STATE.HOLD_SHORT_RUNWAY)
-
-
-class RunwayEnterCall(CallObject):
-
-    def __init__(self, freq, recipient, caller):
-        super().__init__(freq, recipient=recipient, caller=caller, type_call=FLIGHT_STATE.TAKE_RUNWAY)
-
-
-class TakeoffCall(CallObject):
-
-    def __init__(self, freq, recipient, caller):
-        super().__init__(freq, recipient=recipient, caller=caller, type_call=FLIGHT_STATE.TAKEOFF)
-
-
-class DepartCall(CallObject):
-
-    def __init__(self, freq, recipient, caller):
-        super().__init__(freq, recipient=recipient, caller=caller, type_call=FLIGHT_STATE.DEPART_RUNWAY)
-
-
-class InboundCall(CallObject):
-
-    def __init__(self, freq, recipient, caller, type_air, size, altitude, radial, distance):
-        super().__init__(freq, recipient=recipient, caller=caller, type_air=type_air, distance=distance,
-                         size=size, altitude=altitude, radial=radial, type_call=FLIGHT_STATE.INBOUND)
-
-
-class Controller:
+class Controller(threading.Thread):
 
     def __init__(self, freq: float, name: str, base_ref):
-        self._freq = freq
+        threading.Thread.__init__(self)
+        self._radio = RadioEngine(freq)
         self._name = name
         self._base_ref = base_ref
         self._registry = []
+        self._poll_interval: float = 0.5
+        self._exit: bool = False
 
     def _add_flight(self, plane):
         self._registry.append(plane)
         return
 
+    def close(self):
+        self._exit = True
+
 
 class TowerController(Controller):
 
-    def receive_transmission(self, call: CallObject):
-        if call.freq == self._freq:
-            return self.__process_transmission(call)
-        return
+    def receive_transmission(self):
+        new_call = self._radio.listen()
+        if new_call:
+            response = self.__process_transmission(new_call)
+            self._radio.respond(response)
+        else:
+            time.sleep(self._poll_interval)
 
     def __process_transmission(self, call: CallObject):
-        response: ControllerResponseCall = ControllerResponseCall(self._freq, ATC_RESPONSE.STANDBY, caller=self._name)
+        response: ControllerResponseCall = ControllerResponseCall(self._radio.get_frequency(),
+                                                                  ATC_RESPONSE.STANDBY, caller=self._name)
         flight: FlightObject = self._base_ref.aircraft_map.get(call.caller, None)
         if call.type_call == FLIGHT_STATE.TAKE_RUNWAY:
             if not flight or flight.status != FLIGHT_STATE.HOLD_SHORT_RUNWAY:
@@ -174,16 +58,28 @@ class TowerController(Controller):
 
         return response
 
+    def run(self) -> None:
+        print('start tower...')
+        while not self._exit:
+            self.receive_transmission()
+
+        print('end tower...')
+
 
 class GroundController(Controller):
 
-    def receive_transmission(self, call: CallObject):
-        if call.freq == self._freq:
-            return self.__process_transmission(call)
-        return
+    def receive_transmission(self):
+        new_call = self._radio.listen()
+        if new_call:
+            if new_call.type_call in [FLIGHT_STATE.TAXI, FLIGHT_STATE.HOLD_SHORT_RUNWAY]:
+                response = self.__process_transmission(new_call)
+                self._radio.respond(response)
+        else:
+            time.sleep(self._poll_interval)
 
     def __process_transmission(self, call):
-        response: ControllerResponseCall = ControllerResponseCall(self._freq, call.type_call, recipient=call.caller, caller=self._name)
+        response: ControllerResponseCall = ControllerResponseCall(self._radio.get_frequency(), call.type_call,
+                                                                  recipient=call.caller, caller=self._name)
         flight: FlightObject = self._base_ref.aircraft_map.get(call.caller, None)
         if call.type_call == FLIGHT_STATE.TAXI:
             if not flight:
@@ -209,6 +105,13 @@ class GroundController(Controller):
 
         return response
 
+    def run(self) -> None:
+        print('start ground...')
+        self._radio.start()
+        while not self._exit:
+            self.receive_transmission()
+        self._radio.shut_down()
+        print('end ground...')
 
 
 

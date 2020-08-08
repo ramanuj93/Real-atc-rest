@@ -1,7 +1,8 @@
 import json
 import nltk
 
-from elements.Processors import CallObject, TaxiCall, AIRCRAFT
+from constants.EnumATC import AIRCRAFT
+from constants.HelperEntity import TaxiCall
 from util import Util as Util
 
 numbers = ['one', 'two', 'three', 'four', '1', '2', '3', '4']

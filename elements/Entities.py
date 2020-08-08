@@ -1,4 +1,4 @@
-from elements.Processors import GroundController, TowerController, FLIGHT_STATE, CallObject
+from elements.Processors import GroundController, TowerController
 
 
 class Runway:
@@ -50,11 +50,18 @@ class Airport:
         self._ground: GroundController = GroundController(104, name + ' Traffic', self)
         self._tower: TowerController = TowerController(105, name + ' Tower', self)
 
-    def receive_transmission(self, call: CallObject):
-        if call:
-            if call.type_call in [FLIGHT_STATE.TAXI, FLIGHT_STATE.HOLD_SHORT_RUNWAY]:
-                response = self._ground.receive_transmission(call)
-                return response
+    def activate(self):
+        self._ground.start()
+        # self._tower.start()
+
+    def close(self):
+        self._ground.close()
+
+    # def receive_transmission(self, call: CallObject):
+    #     if call:
+    #         if call.type_call in [FLIGHT_STATE.TAXI, FLIGHT_STATE.HOLD_SHORT_RUNWAY]:
+    #             response = self._ground.receive_transmission(call)
+    #             return response
 
     def register_taxi(self, flight: float):
         for runway in self._runways_map.keys():

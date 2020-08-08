@@ -20,7 +20,7 @@ class TextEngine:
                 response = '{0}, please standby'.format(call.recipient)
             elif call.grant_status == ATC_RESPONSE.ACKNOWLEDGE:
                 if call.type_call == FLIGHT_STATE.HOLD_SHORT_RUNWAY:
-                    response = '{0}, Copy'.format(call.recipient)
+                    response = 'Copy {0}'.format(call.recipient)
             elif call.grant_status == ATC_RESPONSE.DENIED:
                 response = 'negative {0}'.format(call.recipient)
         return response
