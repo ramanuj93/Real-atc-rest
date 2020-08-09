@@ -28,12 +28,6 @@ class Runway:
             return True
         return False
 
-    def add_flight_active(self, flights):
-        if self._on_runway == 0 and self._on_final == 0:
-            self._on_runway += flights
-            return True
-        return False
-
     def add_flight_hold_short(self, flights):
         if self._hold_short < self._hold_size:
             self._hold_short += flights
@@ -43,6 +37,12 @@ class Runway:
     def remove_flight_hold_short(self, flights):
         if self._hold_short >= flights:
             self._hold_short -= flights
+            return True
+        return False
+
+    def add_flight_active(self, flights):
+        if self._on_runway == 0 and self._on_final == 0:
+            self._on_runway += flights
             return True
         return False
 
@@ -103,6 +103,8 @@ class Airport:
                 self._runways_map[runway].remove_flight_taxi(flights)
             else:
                 self._runways_map[runway].remove_flight_hold_short(flights)
+            return True
+        return False
 
     def allow_takeoff(self, flights, runway):
         return self._runways_map[runway].clear_takeoff(flights)

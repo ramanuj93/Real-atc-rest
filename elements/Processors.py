@@ -132,6 +132,9 @@ class GroundController(Controller):
         response: ControllerResponseCall = ControllerResponseCall(self._radio.get_frequency(), call.type_call,
                                                                   recipient=call.caller, caller=self._name)
         flight: FlightObject = self._base_ref.aircraft_map.get(call.caller, None)
+        if flight and flight.status == call.type_call \
+                and flight.last_call.type_call == FLIGHT_STATE.WAIT_CLEARANCE:
+            return
         if call.type_call == FLIGHT_STATE.TAXI:
             if not flight:
                 flight = FlightObject(call.caller, call.type_air, FLIGHT_STATE.NEW, call.size)
@@ -179,7 +182,8 @@ class GroundController(Controller):
                 runway_assigned, is_clean = self._base_ref.register_taxi(flight.size)
                 if runway_assigned:
                     response: ControllerResponseCall = ControllerResponseCall(self._radio.get_frequency(),
-                                                                              FLIGHT_STATE.TAKEOFF, caller=self._name)
+                                                                              FLIGHT_STATE.TAKEOFF, caller=self._name,
+                                                                              recipient=flight.callsign)
                     response.runway = runway_assigned
                     flight.runway = runway_assigned
                     if is_clean:
@@ -193,7 +197,9 @@ class GroundController(Controller):
                     flight.status = FLIGHT_STATE.TAKE_RUNWAY
                     response: ControllerResponseCall = ControllerResponseCall(self._radio.get_frequency(),
                                                                               FLIGHT_STATE.TAKE_RUNWAY,
-                                                                              caller=self._name)
+                                                                              caller=self._name,
+                                                                              recipient=flight.callsign,
+                                                                              forward_freq=105)
                     response.grant(ClearanceCall(self._radio.get_frequency()), flight)
                     self._radio.respond(response)
                     time.sleep(0.5)

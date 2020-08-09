@@ -8,7 +8,9 @@ class FlightObject:
                  altitude=None,
                  radial=None,
                  distance=None,
-                 runway: str = None):
+                 runway: str = None,
+                 last_response=None,
+                 last_call=None):
         self.callsign = callsign
         self.type_air = type_air
         self.status = status
@@ -17,8 +19,8 @@ class FlightObject:
         self.radial = radial
         self.distance = distance
         self.runway: str = runway
-        self.last_response = None
-        self.last_call = None
+        self.last_response: ControllerResponseCall = last_response
+        self.last_call: CallObject = last_call
 
 
 class CallObject:

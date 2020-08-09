@@ -15,14 +15,15 @@ class TextEngine:
                     response = '{0}, {1}, Cleared to Taxi to runway {2}, line up and hold'\
                         .format(call.recipient, call.caller, call.runway)
                 elif call.type_call == FLIGHT_STATE.TAKE_RUNWAY:
-                    response = '{0}, you are cleared to take the active'.format(call.recipient)
+                    response = '{0}, you are cleared to take the active, contact tower at {1}'\
+                        .format(call.recipient, call.forward_freq)
                 elif call.type_call == FLIGHT_STATE.TAKEOFF:
                     response = '{0}, you are cleared for takeoff, fly runway heading to angels five'\
                         .format(call.recipient)
             elif call.grant_status == ATC_RESPONSE.STANDBY:
                 if call.type_call == FLIGHT_STATE.TAKEOFF:
                     if call.request.type_call == FLIGHT_STATE.TAKE_RUNWAY:
-                        response = 'Copy that {0}, standby for takeoff clearance '.format(call.recipient)
+                        response = 'Copy that, {0}, standby for takeoff clearance '.format(call.recipient)
                     else:
                         response = '{0}, cannot clear take off at this time, please standby'.format(call.recipient)
                 else:
@@ -39,6 +40,8 @@ class TextEngine:
                 elif call.type_call == FLIGHT_STATE.TAKEOFF:
                     response = 'Copy that {0}, and you are cleared for takeoff, fly runway heading to angels five'\
                         .format(call.recipient)
+                elif call.type_call == FLIGHT_STATE.DEPART_RUNWAY:
+                    response = 'copy {0}, have a safe flight'.format(call.recipient)
 
             elif call.grant_status == ATC_RESPONSE.DENIED:
                 response = 'negative {0}'.format(call.recipient)
