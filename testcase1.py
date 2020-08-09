@@ -16,10 +16,6 @@ from recognition import callinterpreter
 from recognition.Interpreter import Interpreter
 import synthesis.speaker as speaker
 
-runway_3r = Runway('03R', 4)
-runway_21r = Runway('21R', 4)
-nellis = Airport('Nellis', {'03R': runway_3r})
-manager = AirTrafficManager([nellis])
 
 
 nltk.download('stopwords')
@@ -31,6 +27,10 @@ with open('./credentials.cred') as f:
     listener_obj = listen.Listener(credentials)
     speaker_obj = speaker.Speaker(credentials, '/home/ramanuj/box')
     inter = Interpreter()
+    runway_3r = Runway('03R', 4)
+    runway_21r = Runway('21R', 4)
+    nellis = Airport('Nellis', {'03R': runway_3r})
+    manager = AirTrafficManager([nellis], speaker_obj)
 
     manager.begin()
     time.sleep(2)
@@ -51,6 +51,12 @@ with open('./credentials.cred') as f:
             call1 = inter.interpret_call(received)
             EmissionsControl.transmit_request(call1)
         elif '2' == line.rstrip():
+            listener_obj.listen()
+            received = listener_obj.last_result()
+            print('Your call: ' + received)
+            call1 = inter.interpret_call(received, 105)
+            EmissionsControl.transmit_request(call1)
+        elif 'x' == line.rstrip():
             responses: [ControllerResponseCall] = EmissionsControl.broadcast_response()
             if responses:
                 for response in responses:

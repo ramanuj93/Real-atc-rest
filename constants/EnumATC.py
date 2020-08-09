@@ -6,7 +6,8 @@ class ATC_RESPONSE(Enum):
     DENIED = 2,
     STANDBY = 3,
     ACKNOWLEDGE = 4,
-    UNCLEAR = 5
+    UNCLEAR = 5,
+    RAW = 6,
 
 
 class FLIGHT_STATE(Enum):
@@ -22,7 +23,8 @@ class FLIGHT_STATE(Enum):
     DEPART_RUNWAY = 10,
     UNKNOWN = 11,
     NEW = 12,
-    WAIT_FOR_TAXI = 13
+    WAIT_FOR_TAXI = 13,
+    WAIT_CLEARANCE = 14
 
 
 class AIRCRAFT(Enum):

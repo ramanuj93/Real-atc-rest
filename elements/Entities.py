@@ -29,7 +29,7 @@ class Runway:
         return False
 
     def add_flight_active(self, flights):
-        if self._on_runway == 0 and self._departing == 0 and self._on_final == 0:
+        if self._on_runway == 0 and self._on_final == 0:
             self._on_runway += flights
             return True
         return False
@@ -47,7 +47,7 @@ class Runway:
         return False
 
     def clear_takeoff(self, flights):
-        if self._on_runway >= flights and self._departing:
+        if self._on_runway == flights and self._departing == 0:
             self._on_runway -= flights
             self._departing += flights
             return True

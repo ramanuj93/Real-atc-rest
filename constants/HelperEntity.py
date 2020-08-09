@@ -17,6 +17,8 @@ class FlightObject:
         self.radial = radial
         self.distance = distance
         self.runway: str = runway
+        self.last_response = None
+        self.last_call = None
 
 
 class CallObject:
@@ -32,15 +34,14 @@ class CallObject:
                  distance=None,
                  runway=None,
                  radial=None,
-                 grant_status=None,
+                 grant_status: ATC_RESPONSE = ATC_RESPONSE.RAW,
                  forward_freq=None,
                  request=None):
         self._timestamp = time.time()
         self.freq = freq
         self.caller = caller
-        self.flight = flight
+        self.flight: FlightObject = flight
         self.recipient = recipient
-        self.flight = flight
         self.size = size
         self.type_air = type_air
         self.type_call = type_call
@@ -101,6 +102,11 @@ class RunwayEnterCall(CallObject):
             self.missing_items.append('Callsign')
 
 
+class ClearanceCall(CallObject):
+    def __init__(self, freq):
+        super().__init__(freq, type_call=FLIGHT_STATE.WAIT_CLEARANCE)
+
+
 class TakeoffCall(CallObject):
 
     def __init__(self, freq, recipient, caller):
@@ -111,6 +117,12 @@ class DepartCall(CallObject):
 
     def __init__(self, freq, recipient, caller):
         super().__init__(freq, recipient=recipient, caller=caller, type_call=FLIGHT_STATE.DEPART_RUNWAY)
+
+        if caller:
+            self._is_call_valid = True
+        else:
+            if not caller:
+                self.missing_items.append('Callsign')
 
 
 class InboundCall(CallObject):
@@ -128,21 +140,27 @@ class PartialCall(CallObject):
 
 class ControllerResponseCall(CallObject):
 
-    def grant(self, request):
+    def __call_complete(self, request, flight, verdict: ATC_RESPONSE):
         self.request = request
-        self.grant_status = ATC_RESPONSE.GRANTED
+        self.request.flight = flight
+        self.grant_status = verdict
+        self.flight = flight
+        self.flight.last_response = self
+        self.flight.last_call = request
+        if self.type_call == FLIGHT_STATE.UNKNOWN:
+            self.type_call = request.type_call
 
-    def standby(self, request):
-        self.request = request
-        self.grant_status = ATC_RESPONSE.STANDBY
+    def grant(self, request, flight):
+        self.__call_complete(request, flight, ATC_RESPONSE.GRANTED)
 
-    def deny(self, request):
-        self.request = request
-        self.grant_status = ATC_RESPONSE.DENIED
+    def standby(self, request, flight):
+        self.__call_complete(request, flight, ATC_RESPONSE.STANDBY)
 
-    def acknowledge(self, request):
-        self.request = request
-        self.grant_status = ATC_RESPONSE.ACKNOWLEDGE
+    def deny(self, request, flight):
+        self.__call_complete(request, flight, ATC_RESPONSE.DENIED)
+
+    def acknowledge(self, request, flight):
+        self.__call_complete(request, flight, ATC_RESPONSE.ACKNOWLEDGE)
 
     def clarify(self, request):
         self.request = request

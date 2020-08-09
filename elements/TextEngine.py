@@ -20,17 +20,25 @@ class TextEngine:
                     response = '{0}, you are cleared for takeoff, fly runway heading to angels five'\
                         .format(call.recipient)
             elif call.grant_status == ATC_RESPONSE.STANDBY:
-                response = '{0}, please standby'.format(call.recipient)
+                if call.type_call == FLIGHT_STATE.TAKEOFF:
+                    if call.request.type_call == FLIGHT_STATE.TAKE_RUNWAY:
+                        response = 'Copy that {0}, standby for takeoff clearance '.format(call.recipient)
+                    else:
+                        response = '{0}, cannot clear take off at this time, please standby'.format(call.recipient)
+                else:
+                    response = '{0}, please standby'.format(call.recipient)
             elif call.grant_status == ATC_RESPONSE.ACKNOWLEDGE:
                 if call.type_call == FLIGHT_STATE.HOLD_SHORT_RUNWAY:
-                    response = 'Copy {0}, please contact tower at {1}'\
-                        .format(call.recipient, call.forward_freq)
+                    response = 'Copy {0}'.format(call.recipient)
                 elif call.type_call == FLIGHT_STATE.TAKE_RUNWAY:
                     if call.forward_freq and call.forward_freq > 0:
                         response = 'Copy that {0}, contact tower at {1} for takeoff clearance'\
                             .format(call.recipient, call.forward_freq)
                     else:
                         response = 'Copy that {0}'.format(call.recipient)
+                elif call.type_call == FLIGHT_STATE.TAKEOFF:
+                    response = 'Copy that {0}, and you are cleared for takeoff, fly runway heading to angels five'\
+                        .format(call.recipient)
 
             elif call.grant_status == ATC_RESPONSE.DENIED:
                 response = 'negative {0}'.format(call.recipient)

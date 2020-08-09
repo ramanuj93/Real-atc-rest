@@ -2,7 +2,7 @@ import json
 import nltk
 
 from constants.EnumATC import AIRCRAFT, FLIGHT_STATE
-from constants.HelperEntity import TaxiCall, CallObject, HoldShortRunwayCall, RunwayEnterCall
+from constants.HelperEntity import TaxiCall, CallObject, HoldShortRunwayCall, RunwayEnterCall, DepartCall
 from util import Util as Util
 
 numbers = ['one', 'two', 'three', 'four', '1', '2', '3', '4']
@@ -81,8 +81,8 @@ class Interpreter:
         else:
             return AIRCRAFT.UNKNOWN
 
-    def interpret_call(self, sentence):
-        sentence = sentence.lower()
+    def interpret_call(self, sentence, channel=104):
+        sentence = sentence.lower().replace(',', '')
         aircraft, aircraft_num = self.__recognize_aircraft(sentence)
         callsign, callsign_num = self.__recognize_callsign(sentence)
         airport = self.__recognize_airport(sentence)
@@ -101,18 +101,15 @@ class Interpreter:
                 flight_size = aircraft_num
 
         if activity == "taxi":
-            return TaxiCall(104, airport, flight_name, self.__get_recognized_aircraft_type(aircraft),
+            return TaxiCall(channel, airport, flight_name, self.__get_recognized_aircraft_type(aircraft),
                             flight_size, runway)
         if activity == "hold":
-            return HoldShortRunwayCall(104, airport, flight_name, runway)
+            return HoldShortRunwayCall(channel, airport, flight_name, runway)
 
         if activity == "active":
-            return RunwayEnterCall(105, airport, flight_name)
-
-        if activity == "lineup":
-            return RunwayEnterCall(104, airport, flight_name)
+            return RunwayEnterCall(channel, airport, flight_name)
 
         if activity == "depart":
-            return Call
+            return DepartCall(channel, airport, flight_name)
 
-        return CallObject(104, FLIGHT_STATE.UNKNOWN)
+        return CallObject(channel, FLIGHT_STATE.UNKNOWN)

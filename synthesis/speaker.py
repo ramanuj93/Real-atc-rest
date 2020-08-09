@@ -16,7 +16,7 @@ class Speaker:
     def synthesise(self, text):
         file_name = self._folder + "outputaudio.wav"
         file_config = speechsdk.audio.AudioOutputConfig(filename=file_name)
-        self.__speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=self._speech_config, audio_config=file_config)
+        self.__speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=self._speech_config)
         self.__result = self.__speech_synthesizer.speak_text_async(text)
 
     def speak(self):

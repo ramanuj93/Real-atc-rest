@@ -2,7 +2,6 @@ import threading
 import time
 from typing import Dict
 import util.atc_log as logger
-from constants.EnumATC import ATC_RESPONSE
 from constants.HelperEntity import CallObject, ControllerResponseCall
 from util.CallQueue import CallQueue
 
@@ -19,7 +18,7 @@ class Transmissions:
                 self._incoming_queue[call.freq] = CallQueue(50)
             self._incoming_queue[call.freq].push(call)
             if call.is_valid():
-                logger.log_event('pushed call to request stack for ' + call.caller + ' on  freq: ' + str(call.freq)
+                logger.log_event('pushed call to request stack from ' + call.caller + ' on freq: ' + str(call.freq)
                                  + ' stack size is ' + str(self._incoming_queue[call.freq].size()))
             else:
                 logger.log_event('pushed bad call to stack, size is ' + str(self._incoming_queue[call.freq].size()))
@@ -31,7 +30,7 @@ class Transmissions:
                 if result.get_age() > self._timeout:
                     return self.get_request(freq)
                 if result.is_valid():
-                    logger.log_event('retrieved request for ' + result.caller + ' on  freq: ' + str(freq)
+                    logger.log_event('retrieved request from ' + result.caller + ' on  freq: ' + str(freq)
                                      + ' stack size is ' + str(self._incoming_queue[freq].size()))
                 else:
                     logger.log_event('retrieved bad call from stack, size is ' + str(self._incoming_queue[freq].size()))
@@ -75,13 +74,7 @@ class RadioEngine(threading.Thread):
         return self._message_queue.pop()
 
     def respond(self, response: ControllerResponseCall):
-        if response.grant_status == ATC_RESPONSE.STANDBY:
-            if response.request.grant_status != ATC_RESPONSE.STANDBY:
-                response.request.grant_status = ATC_RESPONSE.STANDBY
-                self._transmission_ref.add_response(response)
-            self._message_queue.push(response.request)
-        else:
-            self._transmission_ref.add_response(response)
+        self._transmission_ref.add_response(response)
 
     def shut_down(self):
         self._exit = True
